@@ -1,0 +1,7 @@
+[project]
+name = "hand-gesture-iot-sys"
+version = "0.1.0"
+description = "An IoT system that can be controlled with hand gestures."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
