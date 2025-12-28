@@ -1,4 +1,4 @@
-# from iot_control import IOTConnection
+from iot_control import IOTConnection
 import cv2
 from enum import Enum
 
@@ -23,8 +23,7 @@ class Command(Enum):
     GD_ON = (2, True)
     GD_OFF = (2, False)
 
-# class HandGestureTracker(IOTConnection):
-class HandGestureTracker():
+class HandGestureTracker(IOTConnection):
 
     def __init__(
             self,
