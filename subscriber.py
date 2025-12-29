@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
 BROKER = "broker.hivemq.com"
-TOPIC = "iot/example"
+TOPIC = "home/central"
 
 def on_message(client, userdata, message):
     r = int(message.payload.decode())
