@@ -5,7 +5,7 @@
 // connect to wifi
 const char* ssid = "Wokwi-GUEST"; // Wifi name
 const char* password = "";  // Wifi password
-const char* mqtt_server = "broker.hivemq.com"
+const char* mqtt_server = "broker.hivemq.com";
 
 WifiClient espClient;
 PubSubClient client(espClient);
@@ -46,7 +46,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     garage_door.write(closed);
     Serial.println("--- GARAGE DOOR CLOSED ---");
   } else {
-    Serial.println("--- COMMAND NOR RECOGNISED ---")
+    Serial.println("--- COMMAND NOR RECOGNISED ---");
   }
 }
 
