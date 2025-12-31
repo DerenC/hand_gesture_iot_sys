@@ -7,7 +7,7 @@ const char* ssid = "Wokwi-GUEST"; // Wifi name
 const char* password = "";  // Wifi password
 const char* mqtt_server = "broker.hivemq.com";
 
-WifiClient espClient;
+WiFiClient espClient;
 PubSubClient client(espClient);
 
 // init the pins
@@ -50,13 +50,52 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+void reconnect() {
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT ...");
+    if (client.connect("WokwiClient")) {
+      Serial.println("--- SUCCESSFULLY CONNECTED!! ---");
+      client.subscribe("/home/central");
+    } else {
+      Serial.println("--- FAILED TO CONNECT. RC:");
+      Serial.print(client.state());
+      Serial.print(" ---");
+      delay(1000);
+      // delay() makes everything asleep and goes into dormant.
+      // Be careful when using it. Using here is fine because it is not connected.
+    }
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
-  Serial.println("Hello, ESP32!");
+  Serial.begin(115200); // 115200 is the speed at which ESP read the Serial, make sure it matches your model
+
+  // Init pins using vars
+  pinMode(GL, OUTPUT);
+  pinMode(BL, OUTPUT);
+
+// Init the servo. Connect garage_door Servo object to GD
+  garage_door.attach(GD);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    Serial.print(".");
+  }
+  Serial.println("--- WIFI CONNECTED ---");
+
+  // Connect to the MQTT server broker
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  delay(10); // this speeds up the simulation
+  // All the codes here will run infinitely
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+  delay(15);
 }
