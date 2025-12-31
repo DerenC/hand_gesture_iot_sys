@@ -1,4 +1,4 @@
-#include <Wifi.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 
