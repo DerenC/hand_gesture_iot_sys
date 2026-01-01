@@ -9,7 +9,7 @@ class FingerLM(IntEnum):
     ROOT_POSITION = 0
     DIST_REF_POSITION = 1
 
-ALL_FINGERS = sorted([FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY])
+ALL_FINGERS = tuple(sorted([FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY]))
 
 class Command(Enum):
     BL_ON = (0, True)
