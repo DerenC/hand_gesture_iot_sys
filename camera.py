@@ -44,7 +44,7 @@ class HandGestureTracker(IOTConnection):
             for id, lm in enumerate(hand.landmark):
                 h, w, _ = image.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                self.lm_list.append([id, cx, cy])
+                self.lm_list.append([id, cx, cy, lm.x, lm.y])
 
                 if id == 0 and draw:
                     cv2.circle(image, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
