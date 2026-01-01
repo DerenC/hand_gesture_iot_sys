@@ -74,6 +74,12 @@ class HandGestureTracker(IOTConnection):
         assert finger in REF_BASED_RATIOS, "finger not found in REF_BASED_RATIOS when calling self._is_finger_down()"
         return self._get_finger_dist(finger) < REF_BASED_RATIOS[finger]
 
+    def _which_fingers_down(self):
+        down_fingers = set()
+        for finger in ALL_FINGERS:
+            if self._is_finger_down(finger): down_fingers.add(finger)
+        return down_fingers
+
     def _finger_down(self, fingers=[]):
         heights = []
         for finger in fingers:
