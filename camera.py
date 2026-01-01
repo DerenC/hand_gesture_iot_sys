@@ -46,7 +46,7 @@ class HandGestureTracker(IOTConnection):
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 self.lm_list.append([id, cx, cy, lm.x, lm.y])
 
-                if id == 0 and draw:
+                if id == FingerLM.ROOT_POSITION.value and draw:
                     cv2.circle(image, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
 
     def _finger_down(self, fingers=[]):
