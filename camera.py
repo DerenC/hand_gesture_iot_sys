@@ -1,6 +1,7 @@
 from iot_control import IOTConnection
 from enums import FingerLM, ALL_FINGERS, Command
 from utils import dist_between
+from constants import REF_BASED_RATIOS
 
 import cv2
 
@@ -64,6 +65,14 @@ class HandGestureTracker(IOTConnection):
 
             if self.lm0_xy is not None and self.lm1_xy is not None:
                 self.ref_dist = self._get_ref_dist()
+
+    def _get_finger_dist(self, finger):
+        finger_lm_x, finger_lm_y = self.lm_list[finger.value][3:5]
+        return dist_between(self.lm0_xy[0], self.lm0_xy[1], finger_lm_x, finger_lm_y)
+
+    def _is_finger_down(self, finger):
+        assert finger in REF_BASED_RATIOS, "finger not found in REF_BASED_RATIOS when calling self._is_finger_down()"
+        return self._get_finger_dist(finger) < REF_BASED_RATIOS[finger]
 
     def _finger_down(self, fingers=[]):
         heights = []
