@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
-class FingerLM(Enum):
+class FingerLM(IntEnum):
     THUMB = 4
     INDEX = 8
     MIDDLE = 12
@@ -9,7 +9,7 @@ class FingerLM(Enum):
     ROOT_POSITION = 0
     DIST_REF_POSITION = 1
 
-ALL_FINGERS = [FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY]
+ALL_FINGERS = sorted([FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY])
 
 class Command(Enum):
     BL_ON = (0, True)
