@@ -1,27 +1,9 @@
 from iot_control import IOTConnection
+from enums import FingerLM, ALL_FINGERS, Command
+
 import cv2
-from enum import Enum
 
 import mediapipe as mp
-
-class Finger(Enum):
-    THUMB = 4
-    INDEX = 8
-    MIDDLE = 12
-    RING = 16
-    PINKY = 20
-
-ALL_FINGERS = [Finger.THUMB, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.PINKY]
-
-ROOT_POSITION = 0
-
-class Command(Enum):
-    BL_ON = (0, True)
-    BL_OFF = (0, False)
-    GL_ON = (1, True)
-    GL_OFF = (1, False)
-    GD_ON = (2, True)
-    GD_OFF = (2, False)
 
 class HandGestureTracker(IOTConnection):
 
@@ -70,17 +52,17 @@ class HandGestureTracker(IOTConnection):
     def _finger_down(self, fingers=[]):
         heights = []
         for finger in fingers:
-            if finger == Finger.THUMB:
-                heights.append(abs(self.lm_list[finger.value][2] - self.lm_list[ROOT_POSITION][2] < 100))
+            if finger == FingerLM.THUMB:
+                heights.append(abs(self.lm_list[finger.value][2] - self.lm_list[FingerLM.ROOT_POSITION][2] < 100))
             else:   # The other fingers
-                heights.append(abs(self.lm_list[finger.value][2] - self.lm_list[ROOT_POSITION][2] < 90))
+                heights.append(abs(self.lm_list[finger.value][2] - self.lm_list[FingerLM.ROOT_POSITION][2] < 90))
         return heights
 
     def _check_are_fingers_up_others_down(self, target_fingers, heights_thres):
         assert len(target_fingers) == len(heights_thres), "target_fingers and heights_thres have diff lengths in _check_are_fingers_up_others_down()" 
 
         for idx, finger in enumerate(target_fingers):
-            is_finger_up = abs(self.lm_list[finger.value][2] - self.lm_list[ROOT_POSITION][2]) >= heights_thres[idx]
+            is_finger_up = abs(self.lm_list[finger.value][2] - self.lm_list[FingerLM.ROOT_POSITION][2]) >= heights_thres[idx]
             if not is_finger_up: return False
 
         other_fingers = [finger for finger in ALL_FINGERS if finger not in target_fingers]
@@ -92,7 +74,7 @@ class HandGestureTracker(IOTConnection):
         if not self.lm_list: return
 
         # Only the index finger is up.
-        if self._check_are_fingers_up_others_down([Finger.INDEX], [150]):
+        if self._check_are_fingers_up_others_down([FingerLM.INDEX], [150]):
             print("Bedroom Light ON")
             self.command = Command.BL_ON
 
@@ -102,22 +84,22 @@ class HandGestureTracker(IOTConnection):
             self.command = Command.BL_OFF
 
         # The index and middle fingers are up
-        if self._check_are_fingers_up_others_down([Finger.INDEX, Finger.MIDDLE], [150, 200]):
+        if self._check_are_fingers_up_others_down([FingerLM.INDEX, FingerLM.MIDDLE], [150, 200]):
             print("Garage Light ON")
             self.command = Command.GL_ON
 
         # Only the pinky finger is up
-        if self._check_are_fingers_up_others_down([Finger.PINKY], [135]):
+        if self._check_are_fingers_up_others_down([FingerLM.PINKY], [135]):
             print("Garage Light OFF")
             self.command = Command.GL_OFF
 
         # Thumbs-up gesture
-        if self._check_are_fingers_up_others_down([Finger.THUMB], [100]):
+        if self._check_are_fingers_up_others_down([FingerLM.THUMB], [100]):
             print("Opening Garage Door")
             self.command = Command.GD_ON
 
         # Rock hand sign
-        if self._check_are_fingers_up_others_down([Finger.INDEX, Finger.PINKY], [150, 135]):
+        if self._check_are_fingers_up_others_down([FingerLM.INDEX, FingerLM.PINKY], [150, 135]):
             print("Closing Garage Door")
             self.command = Command.GD_OFF
 
