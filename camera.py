@@ -2,6 +2,7 @@ from iot_control import IOTConnection
 from enums import FingerLM, ALL_FINGERS, Command
 from utils import dist_between
 from constants import REF_BASED_RATIOS
+from gesture_config import up_fingers_to_gesture
 
 import cv2
 
@@ -70,15 +71,16 @@ class HandGestureTracker(IOTConnection):
         finger_lm_x, finger_lm_y = self.lm_list[finger.value][3:5]
         return dist_between(self.lm0_xy[0], self.lm0_xy[1], finger_lm_x, finger_lm_y)
 
-    def _is_finger_down(self, finger):
-        assert finger in REF_BASED_RATIOS, "finger not found in REF_BASED_RATIOS when calling self._is_finger_down()"
-        return self._get_finger_dist(finger) < REF_BASED_RATIOS[finger]
+    def _is_finger_up(self, finger):
+        assert finger in REF_BASED_RATIOS and self.ref_dist is not None and self.ref_dist != 0, \
+            "finger not found in REF_BASED_RATIOS when calling self._is_finger_up()"
+        return self._get_finger_dist(finger) / self.ref_dist >= REF_BASED_RATIOS[finger]
 
-    def _which_fingers_down(self):
-        down_fingers = set()
+    def _which_fingers_up(self):
+        up_fingers = []
         for finger in ALL_FINGERS:
-            if self._is_finger_down(finger): down_fingers.add(finger)
-        return down_fingers
+            if self._is_finger_up(finger): up_fingers.append(finger)
+        return tuple(sorted(up_fingers))
 
     def _finger_down(self, fingers=[]):
         heights = []
@@ -102,37 +104,36 @@ class HandGestureTracker(IOTConnection):
         return other_fingers_down
 
     def _gesture_command(self):
-        if not self.lm_list: return
+        if not self.lm_list or self.lm0_xy is None or self.lm1_xy is None or self.ref_dist is None: return
 
-        # Only the index finger is up.
-        if self._check_are_fingers_up_others_down([FingerLM.INDEX], [150]):
-            print("Bedroom Light ON")
-            self.command = Command.BL_ON
+        up_fingers = self._which_fingers_up()
+        gesture_name = up_fingers_to_gesture.get(up_fingers, "")
 
-        # All fingers are down.
-        if self._check_are_fingers_up_others_down([], []):
-            print("Bedroom Light OFF")
-            self.command = Command.BL_OFF
+        match gesture_name:
 
-        # The index and middle fingers are up
-        if self._check_are_fingers_up_others_down([FingerLM.INDEX, FingerLM.MIDDLE], [150, 200]):
-            print("Garage Light ON")
-            self.command = Command.GL_ON
+            case "only-index-up":
+                print("Bedroom Light ON")
+                self.command = Command.BL_ON
 
-        # Only the pinky finger is up
-        if self._check_are_fingers_up_others_down([FingerLM.PINKY], [135]):
-            print("Garage Light OFF")
-            self.command = Command.GL_OFF
+            case "fist":
+                print("Bedroom Light OFF")
+                self.command = Command.BL_OFF
 
-        # Thumbs-up gesture
-        if self._check_are_fingers_up_others_down([FingerLM.THUMB], [100]):
-            print("Opening Garage Door")
-            self.command = Command.GD_ON
+            case "peace-sign":
+                print("Garage Light ON")
+                self.command = Command.GL_ON
 
-        # Rock hand sign
-        if self._check_are_fingers_up_others_down([FingerLM.INDEX, FingerLM.PINKY], [150, 135]):
-            print("Closing Garage Door")
-            self.command = Command.GD_OFF
+            case "only-pinky-up":
+                print("Garage Light OFF")
+                self.command = Command.GL_OFF
+
+            case "only-thumb-up":
+                print("Opening Garage Door")
+                self.command = Command.GD_ON
+
+            case "spiderman":
+                print("Closing Garage Door")
+                self.command = Command.GD_OFF
 
         if self.command != self.prev_command:
             self.prev_command = self.command

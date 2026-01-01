@@ -3,7 +3,7 @@ from enums import FingerLM
 SCALE_DOWN_FACTOR = 0.75
 
 REF_BASED_RATIOS = {
-    FingerLM.THUMB: 3.6 * SCALE_DOWN_FACTOR,
+    FingerLM.THUMB: 100,    # TO-FIX
     FingerLM.INDEX: 6.6 * SCALE_DOWN_FACTOR,
     FingerLM.MIDDLE: 7.2 * SCALE_DOWN_FACTOR,
     FingerLM.RING: 7.0 * SCALE_DOWN_FACTOR,
