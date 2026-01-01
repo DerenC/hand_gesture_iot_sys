@@ -7,6 +7,7 @@ class FingerLM(Enum):
     RING = 16
     PINKY = 20
     ROOT_POSITION = 0
+    DIST_REF_POSITION = 1
 
 ALL_FINGERS = [FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY]
 
