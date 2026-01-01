@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+
+finger_measurement_data/
