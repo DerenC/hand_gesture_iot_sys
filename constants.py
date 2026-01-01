@@ -1,11 +1,11 @@
 from enums import FingerLM
 
-REF_BASED_RATIOS = {
-    FingerLM.THUMB: 3.6,
-    FingerLM.INDEX: 6.6,
-    FingerLM.MIDDLE: 7.2,
-    FingerLM.RING: 7.0,
-    FingerLM.PINKY: 5.9,
-}
-
 SCALE_DOWN_FACTOR = 0.75
+
+REF_BASED_RATIOS = {
+    FingerLM.THUMB: 3.6 * SCALE_DOWN_FACTOR,
+    FingerLM.INDEX: 6.6 * SCALE_DOWN_FACTOR,
+    FingerLM.MIDDLE: 7.2 * SCALE_DOWN_FACTOR,
+    FingerLM.RING: 7.0 * SCALE_DOWN_FACTOR,
+    FingerLM.PINKY: 5.9 * SCALE_DOWN_FACTOR,
+}
