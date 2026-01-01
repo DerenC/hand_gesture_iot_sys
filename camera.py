@@ -26,6 +26,8 @@ class HandGestureTracker(IOTConnection):
         self.mp_draw = mp.solutions.drawing_utils
         self.command = None
         self.prev_command = None
+        self.lm0_xy = None
+        self.lm1_xy = None
 
     def _hand_finder(self, image, draw=True):
         img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -46,8 +48,12 @@ class HandGestureTracker(IOTConnection):
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 self.lm_list.append([id, cx, cy, lm.x, lm.y])
 
-                if id == FingerLM.ROOT_POSITION.value and draw:
-                    cv2.circle(image, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
+                if id == FingerLM.ROOT_POSITION.value:
+                    self.lm0_xy = (lm.x, lm.y)
+                    if draw: cv2.circle(image, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
+
+                elif id == FingerLM.DIST_REF_POSITION.value:
+                    self.lm1_xy = (lm.x, lm.y)
 
     def _finger_down(self, fingers=[]):
         heights = []
