@@ -1,5 +1,6 @@
 from iot_control import IOTConnection
 from enums import FingerLM, ALL_FINGERS, Command
+from utils import dist_between
 
 import cv2
 
@@ -28,6 +29,7 @@ class HandGestureTracker(IOTConnection):
         self.prev_command = None
         self.lm0_xy = None
         self.lm1_xy = None
+        self.ref_dist = None
 
     def _hand_finder(self, image, draw=True):
         img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -38,6 +40,11 @@ class HandGestureTracker(IOTConnection):
                 if draw:
                     self.mp_draw.draw_landmarks(image, landmark, self.mp_hands.HAND_CONNECTIONS)
         return image
+
+    def _get_ref_dist(self):
+        assert self.lm0_xy is not None and self.lm1_xy is not None, \
+            "self.lm0_xy or self.lm1_xy is None when calling self._get_self_dist()"
+        return dist_between(self.lm0_xy[0], self.lm0_xy[1], self.lm1_xy[0], self.lm1_xy[1])
 
     def _position_finder(self, image, hand_idx=0, draw=True):
         self.lm_list = []
@@ -54,6 +61,9 @@ class HandGestureTracker(IOTConnection):
 
                 elif id == FingerLM.DIST_REF_POSITION.value:
                     self.lm1_xy = (lm.x, lm.y)
+
+            if self.lm0_xy is not None and self.lm1_xy is not None:
+                self.ref_dist = self._get_ref_dist()
 
     def _finger_down(self, fingers=[]):
         heights = []
