@@ -1,7 +1,7 @@
 from iot_control import IOTConnection
 from enums import FingerLM, ALL_FINGERS, ThumbLM, THUMB_LMS, Command
 from utils import dist_between, get_diff_vec, get_angle
-from constants import REF_BASED_RATIOS
+from constants import REF_BASED_RATIOS, THUMB_ANGLE_THRES
 from gesture_config import up_fingers_to_gesture
 
 import math
@@ -73,17 +73,6 @@ class HandGestureTracker(IOTConnection):
         finger_lm_x, finger_lm_y = self.lm_list[finger.value][3:5]
         return dist_between(self.lm0_xy[0], self.lm0_xy[1], finger_lm_x, finger_lm_y)
 
-    def _is_finger_up(self, finger):
-        assert finger in REF_BASED_RATIOS and self.ref_dist is not None and self.ref_dist != 0, \
-            "finger not found in REF_BASED_RATIOS when calling self._is_finger_up()"
-        return self._get_finger_dist(finger) / self.ref_dist >= REF_BASED_RATIOS[finger]
-
-    def _which_fingers_up(self):
-        up_fingers = []
-        for finger in ALL_FINGERS:
-            if self._is_finger_up(finger): up_fingers.append(finger)
-        return tuple(sorted(up_fingers))
-
     def _get_total_angle_diff(self):
         thumb_vecs = [
             get_diff_vec(
@@ -104,6 +93,19 @@ class HandGestureTracker(IOTConnection):
             )
         
         return total_angle
+
+    def _is_finger_up(self, finger):
+        assert finger in REF_BASED_RATIOS and self.ref_dist is not None and self.ref_dist != 0, \
+            "finger not found in REF_BASED_RATIOS when calling self._is_finger_up()"
+        if finger == FingerLM.THUMB:
+            return self._get_total_angle_diff() < THUMB_ANGLE_THRES
+        return self._get_finger_dist(finger) / self.ref_dist >= REF_BASED_RATIOS[finger]
+
+    def _which_fingers_up(self):
+        up_fingers = []
+        for finger in ALL_FINGERS:
+            if self._is_finger_up(finger): up_fingers.append(finger)
+        return tuple(sorted(up_fingers))
 
     def _finger_down(self, fingers=[]):
         heights = []
@@ -129,43 +131,38 @@ class HandGestureTracker(IOTConnection):
     def _gesture_command(self):
         if not self.lm_list or self.lm0_xy is None or self.lm1_xy is None or self.ref_dist is None: return
 
-        angle_diff = self._get_total_angle_diff()
-        print("RADIAN: ", angle_diff)
-        print("DEGREE: ", math.degrees(angle_diff))
-        print()
+        up_fingers = self._which_fingers_up()
+        gesture_name = up_fingers_to_gesture.get(up_fingers, "")
 
-        # up_fingers = self._which_fingers_up()
-        # gesture_name = up_fingers_to_gesture.get(up_fingers, "")
+        match gesture_name:
 
-        # match gesture_name:
+            case "only-index-up":
+                print("Bedroom Light ON")
+                self.command = Command.BL_ON
 
-        #     case "only-index-up":
-        #         print("Bedroom Light ON")
-        #         self.command = Command.BL_ON
+            case "fist":
+                print("Bedroom Light OFF")
+                self.command = Command.BL_OFF
 
-        #     case "fist":
-        #         print("Bedroom Light OFF")
-        #         self.command = Command.BL_OFF
+            case "peace-sign":
+                print("Garage Light ON")
+                self.command = Command.GL_ON
 
-        #     case "peace-sign":
-        #         print("Garage Light ON")
-        #         self.command = Command.GL_ON
+            case "only-pinky-up":
+                print("Garage Light OFF")
+                self.command = Command.GL_OFF
 
-        #     case "only-pinky-up":
-        #         print("Garage Light OFF")
-        #         self.command = Command.GL_OFF
+            case "only-thumb-up":
+                print("Opening Garage Door")
+                self.command = Command.GD_ON
 
-        #     case "only-thumb-up":
-        #         print("Opening Garage Door")
-        #         self.command = Command.GD_ON
+            case "spiderman":
+                print("Closing Garage Door")
+                self.command = Command.GD_OFF
 
-        #     case "spiderman":
-        #         print("Closing Garage Door")
-        #         self.command = Command.GD_OFF
-
-        # if self.command != self.prev_command:
-        #     self.prev_command = self.command
-        #     # send the message to broker
+        if self.command != self.prev_command:
+            self.prev_command = self.command
+            # send the message to broker
 
     def run(self, show=True):
         cap = cv2.VideoCapture(0)
