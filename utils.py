@@ -10,7 +10,7 @@ def get_diff_vec(start_x, start_y, end_x, end_y):
     return (end_x - start_x, end_y - start_y)
 
 def get_dot_prod(x1, y1, x2, y2):
-    return x1 * x2 + y1 + y2
+    return x1 * x2 + y1 * y2
 
 def get_vec_mag(x, y):
     return math.sqrt(x**2 + y**2)
