@@ -87,10 +87,10 @@ class HandGestureTracker(IOTConnection):
     def _get_total_angle_diff(self):
         thumb_vecs = [
             get_diff_vec(
-                self.lm_list[0][0],
-                self.lm_list[0][1],
-                self.lm_list[thumb_lm.value][0],
-                self.lm_list[thumb_lm.value][1]
+                self.lm_list[0][3],
+                self.lm_list[0][4],
+                self.lm_list[thumb_lm.value][3],
+                self.lm_list[thumb_lm.value][4]
             ) for thumb_lm in THUMB_LMS
         ]
         total_angle = 0
