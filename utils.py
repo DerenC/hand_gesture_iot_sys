@@ -1,7 +1,7 @@
 import math
 
 DIST_NUM_OF_DP = 6
-RADIAN_NUM_OF_DP = 3
+DEGREE_NUM_OF_DP = 1
 
 def dist_between(x1, y1, x2, y2):
     return round(math.sqrt( (x1 - x2)**2 + (y1 - y2)**2), DIST_NUM_OF_DP)
@@ -21,6 +21,6 @@ def get_cos_similarity(x1, y1, x2, y2):
 
 def get_angle(x1, y1, x2, y2):
     try:
-        return math.acos(get_cos_similarity(x1, y1, x2, y2))
+        return round(math.degrees(math.acos(get_cos_similarity(x1, y1, x2, y2))), DEGREE_NUM_OF_DP)
     except ValueError:
         return 0
