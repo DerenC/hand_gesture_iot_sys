@@ -11,6 +11,12 @@ class FingerLM(IntEnum):
 
 ALL_FINGERS = tuple(sorted([FingerLM.THUMB, FingerLM.INDEX, FingerLM.MIDDLE, FingerLM.RING, FingerLM.PINKY]))
 
+class ThumbLM(IntEnum):
+    CMC = 1
+    MCP = 2
+    IP = 3
+    TIP = 4
+
 class Command(Enum):
     BL_ON = (0, True)
     BL_OFF = (0, False)
