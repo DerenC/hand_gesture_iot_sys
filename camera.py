@@ -99,8 +99,8 @@ class HandGestureTracker(IOTConnection):
             total_angle += get_angle(
                 thumb_vecs[i][0],
                 thumb_vecs[i][1],
-                thumb_vecs[i+1][0],
-                thumb_vecs[i+1][1]
+                thumb_vecs[i + 1][0],
+                thumb_vecs[i + 1][1]
             )
         
         return total_angle
