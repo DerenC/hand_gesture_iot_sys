@@ -20,6 +20,7 @@ class ThumbLM(IntEnum):
 THUMB_LMS = tuple(sorted([ThumbLM.CMC, ThumbLM.MCP, ThumbLM.IP, ThumbLM.TIP]))
 
 class Command(Enum):
+    NULL = (-1, None)
     BL_ON = (0, True)
     BL_OFF = (0, False)
     GL_ON = (1, True)

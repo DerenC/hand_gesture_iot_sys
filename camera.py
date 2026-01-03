@@ -27,8 +27,8 @@ class HandGestureTracker(IOTConnection):
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(self.mode, self.max_hands, self.model_complexity, self.detection_conf, self.track_conf)
         self.mp_draw = mp.solutions.drawing_utils
-        self.command = None
-        self.prev_command = None
+        self.command = Command.NULL
+        self.prev_command = Command.NULL
         self.lm0_xy = None
         self.lm1_xy = None
         self.ref_dist = None
