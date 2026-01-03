@@ -33,7 +33,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (message == "BL_OFF") {
     digitalWrite(BL, LOW);  // 0V
     Serial.println("--- BEDROOM LIGHT OFF ---");
-  } else if (message="GL_ON") {
+  } else if (message == "GL_ON") {
     digitalWrite(GL, HIGH);
     Serial.println("--- GARAGE LIGHT ON ---");
   } else if (message == "GL_OFF") {
