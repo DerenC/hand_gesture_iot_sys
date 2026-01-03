@@ -1,10 +1,8 @@
 from iot_control import IOTConnection
-from enums import FingerLM, ALL_FINGERS, ThumbLM, THUMB_LMS, Command
+from enums import FingerLM, ALL_FINGERS, THUMB_LMS, Command
 from utils import dist_between, get_diff_vec, get_angle
 from constants import REF_BASED_RATIOS, THUMB_ANGLE_THRES
 from gesture_config import up_fingers_to_gesture
-
-import math
 
 import cv2
 
