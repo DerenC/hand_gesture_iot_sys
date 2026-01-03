@@ -163,6 +163,7 @@ class HandGestureTracker(IOTConnection):
         if self.command != self.prev_command:
             self.prev_command = self.command
             # send the message to broker
+            self._send_to_topic(self.command.name)
 
     def run(self, show=True):
         cap = cv2.VideoCapture(0)
