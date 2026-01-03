@@ -55,7 +55,7 @@ void reconnect() {
     Serial.println("Connecting to MQTT ...");
     if (client.connect("WokwiClient")) {
       Serial.println("--- SUCCESSFULLY CONNECTED!! ---");
-      client.subscribe("/home/central");
+      client.subscribe("home/central");
     } else {
       Serial.println("--- FAILED TO CONNECT. RC:");
       Serial.print(client.state());
